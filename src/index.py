@@ -7,13 +7,15 @@ import time
 # import board
 # import neopixel
 import pathlib
+import asyncio
 
 # DATA_PIN = board.D10
-# pixel = neopixel.NeoPixel(DATA_PIN, 30)
+# pixel = neopixel.NeoPixel(DATA_PIN, 118)
 
 appInfo = json.loads(pathlib.Path("./appInfo.json").read_text())
 
-# current_weather = None
+mock_response = json.loads(pathlib.Path("./mockResponse.json").read_text())
+
 current_weather = {
             "dt": 1737223200,
             "sunrise": 1737207910,
@@ -55,48 +57,84 @@ current_weather = {
             "pop": 0,
             "uvi": 0.97
         }
-tempature_tolerance = 5
+        # current_weather = None
 
-def get_weather_data(api_url):
+class Trend:
+    def __init__(self):
+        self.temp = "No Change"
+        self.precipitation = False
+
+async def get_weather_data(api_url):
     try:
         response = requests.get(api_url)
         response.raise_for_status()  # Raise an exception for HTTP errors
         return response.json()
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching data: {e}")
+        print("Error fetching data: {e}")
         return None
 
-def main():
-    print("Fetching weather data...")
-    api_url = "https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&exclude=hourly,minutely&appid={appId}".format(lat = appInfo["lat"], lon = appInfo["lon"], appId = appInfo["appId"])
-    weather_data = get_weather_data(api_url)
-    if weather_data:
-        print("Weather Data:")
-        print(json.dumps(weather_data, indent=4))
+async def monitor_weather_trend(trend):
+    while True:
+        global current_weather
+        global temperature_tolerance
+        print("Fetching weather data...")
+        api_url = "https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&exclude=hourly,minutely,alerts,current&units=imperial&appid={appId}".format(lat = appInfo["lat"], lon = appInfo["lon"], appId = appInfo["appId"])
+        # weather_data = await get_weather_data(api_url)
+        weather_data = mock_response # Simulated data for testing
+        # if weather_data:
+        #     print("Weather Data:")
+        #     print(json.dumps(weather_data, indent=4))
+        #     raise Exception("just once")
 
-    global current_weather
-    if current_weather is None:
-        current_weather = weather_data["daily"][0]
+        if current_weather is None:
+            current_weather = weather_data["daily"][0]
 
-    tomorrow = weather_data["daily"][0]
+        tomorrow = weather_data["daily"][0]
 
-    temp_today = current_weather["temp"]["day"]
-    temp_tomorrow = tomorrow["temp"]["day"]
+        temp_today = current_weather["temp"]["day"]
+        temp_tomorrow = tomorrow["temp"]["day"]
 
-    if temp_tomorrow > temp_today + tempature_tolerance:
-        print("Red")
+        if temp_tomorrow > (temp_today + appInfo.temperature_tolerance):
+            print("Warmer")
+            trend.temp = "Warmer"
 
-    elif temp_tomorrow < temp_today - tempature_tolerance:
-        print("White")
+        elif temp_tomorrow < (temp_today - appInfo.temperature_tolerance):
+            print("Cooler")
+            trend.temp = "Colder"
+        else:
+            print("No Change")
+            trend.temp = "No Change"
 
-    else:
-        print("Green")
+        if tomorrow["pop"] >= 0.5:
+            print("Rain is expected tomorrow.")
+            trend.precipitation = True
+        else:
+            print("No rain expected tomorrow.")
+            trend.precipitation = False
+        await asyncio.sleep(10) # seconds
 
-    if tomorrow["pop"] >= 0.5:
-        print("Rain is expected tomorrow.")
-    else:
-        print("No rain expected tomorrow.")
+async def drive_pixels(trend):
+    overall_brightness = 0.0
+    while True:
+        if trend.temp == "Warmer":
+            color = (255, 0, 0)  # Red
+        elif trend.temp == "Colder":
+            color = (255, 255, 255)  # White
+        else:
+            color = (0, 255, 0)  # Green
+        # pixel.fill(color)
 
-# while True:
-main()
-    # time.sleep(60)
+        print("Color:", color)
+        #     print(json.dumps(weather_data, indent=4))
+
+        await asyncio.sleep(1)
+    
+async def main():
+    trend = Trend()
+
+    weather_task = asyncio.create_task(monitor_weather_trend(trend))
+    pixel_task = asyncio.create_task(drive_pixels(trend))
+
+    await asyncio.gather(weather_task, pixel_task)
+
+asyncio.run(main())

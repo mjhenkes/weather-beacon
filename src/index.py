@@ -4,13 +4,13 @@
 import requests
 import json
 import time
-# import board
-# import neopixel
+import board
+import neopixel
 import pathlib
 import asyncio
 
-# DATA_PIN = board.D10
-# pixel = neopixel.NeoPixel(DATA_PIN, 118)
+DATA_PIN = board.D18
+pixel = neopixel.NeoPixel(DATA_PIN, 118)
 
 appInfo = json.loads(pathlib.Path("./appInfo.json").read_text())
 
@@ -122,7 +122,7 @@ async def drive_pixels(trend):
             color = (255, 255, 255)  # White
         else:
             color = (0, 255, 0)  # Green
-        # pixel.fill(color)
+        pixel.fill(color)
 
         print("Color:", color)
         #     print(json.dumps(weather_data, indent=4))

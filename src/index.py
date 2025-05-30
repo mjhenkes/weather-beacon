@@ -14,6 +14,9 @@ order = neopixel.RGBW
 number_of_pixels = 118
 pixel = neopixel.NeoPixel(data_pin, number_of_pixels, brightness=0.5, auto_write=False, pixel_order=order)
 
+pattern_offset = 0
+pattern = [255, 192, 126, 192, 255]
+
 appInfo = json.loads(pathlib.Path("./appInfo.json").read_text())
 
 mock_response = json.loads(pathlib.Path("./mockResponse.json").read_text())
@@ -123,20 +126,36 @@ async def monitor_weather_trend(trend):
             trend.temp = "No Change"
         else:
             trend.temp = "Warmer"
+            trend.precipitation = !trend.precipitation  # Toggle precipitation for testing
+
+
         # current_weather = tomorrow  # Update current weather for the next iteration
         await asyncio.sleep(10) # seconds TODO: set to appInfo["weather_update_interval"]
 
+def trend_to_color(trend, intensity):
+    if trend.temp == "Warmer":
+        return (intensity, 0, 0, 0)  # Red
+    elif trend.temp == "Colder":
+        return (0, 0, 0, intensity)  # White
+    else:
+        return (0, intensity, 0, 0)  # Green
+
 async def drive_pixels(trend):
-    overall_brightness = 0.0
+    global pattern
+    global pattern_length
+    global pattern_offset
     while True:
-        if trend.temp == "Warmer":
-            color = (255, 0, 0, 0)  # Red
-        elif trend.temp == "Colder":
-            color = (0, 0, 0, 255)  # White
+
+        if !trend.precipitation:
+            color = trend_to_color(trend, 255)
+            pixel.fill(color)
         else:
-            color = (0, 255, 0, 0)  # Green
-        pixel.fill(color)
-        pixel.show()
+            pattern_index = pattern_offset
+            for i in range(number_of_pixels):
+                pixel[i] = trend_to_color(trend, pattern[pattern_index])
+                pattern_index = (pattern_index + 1) % len(pattern)
+            pattern_offset = (pattern_offset + 1) % len(pattern)
+            pixel.show()
 
         print("Color:", color)
         #     print(json.dumps(weather_data, indent=4))

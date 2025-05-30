@@ -94,11 +94,11 @@ async def monitor_weather_trend(trend):
         temp_today = current_weather["temp"]["day"]
         temp_tomorrow = tomorrow["temp"]["day"]
 
-        if temp_tomorrow > (temp_today + appInfo.temperature_tolerance):
+        if temp_tomorrow > (temp_today + appInfo["temperature_tolerance"]):
             print("Warmer")
             trend.temp = "Warmer"
 
-        elif temp_tomorrow < (temp_today - appInfo.temperature_tolerance):
+        elif temp_tomorrow < (temp_today - appInfo["temperature_tolerance"]):
             print("Cooler")
             trend.temp = "Colder"
         else:

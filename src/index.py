@@ -117,11 +117,11 @@ async def drive_pixels(trend):
     overall_brightness = 0.0
     while True:
         if trend.temp == "Warmer":
-            color = (255, 0, 0)  # Red
+            color = (255, 0, 0, 0)  # Red
         elif trend.temp == "Colder":
-            color = (255, 255, 255)  # White
+            color = (255, 255, 255, 0)  # White
         else:
-            color = (0, 255, 0)  # Green
+            color = (0, 255, 0, 0)  # Green
         pixel.fill(color)
 
         print("Color:", color)

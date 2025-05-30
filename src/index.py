@@ -9,8 +9,10 @@ import neopixel
 import pathlib
 import asyncio
 
-DATA_PIN = board.D18
-pixel = neopixel.NeoPixel(DATA_PIN, 118)
+data_pin = board.D18
+order = neopixel.RGBW
+number_of_pixels = 118
+pixel = neopixel.NeoPixel(data_pin, number_of_pixels, brightness=5.0, auto_write=False, pixel_order=order)
 
 appInfo = json.loads(pathlib.Path("./appInfo.json").read_text())
 
@@ -123,6 +125,7 @@ async def drive_pixels(trend):
         else:
             color = (0, 255, 0, 0)  # Green
         pixel.fill(color)
+        pixel.show()
 
         print("Color:", color)
         #     print(json.dumps(weather_data, indent=4))

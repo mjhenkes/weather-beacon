@@ -11,7 +11,7 @@ import asyncio
 
 data_pin = board.D18
 order = neopixel.RGBW
-number_of_pixels = 118
+number_of_pixels = 119
 pixel = neopixel.NeoPixel(data_pin, number_of_pixels, brightness=0.5, auto_write=False, pixel_order=order)
 
 pattern_offset = 0
@@ -157,7 +157,7 @@ async def drive_pixels(trend):
             pattern_offset = (pattern_offset + 1) % len(pattern)
             pixel.show()
 
-        print("Color:", color)
+        print("Tend:", trend.temp, "Precipitation:", trend.precipitation)
         #     print(json.dumps(weather_data, indent=4))
 
         await asyncio.sleep(1)

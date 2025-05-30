@@ -88,32 +88,43 @@ async def monitor_weather_trend(trend):
         #     print(json.dumps(weather_data, indent=4))
         #     raise Exception("just once")
 
-        if current_weather is None:
-            current_weather = weather_data["daily"][0]
+        # if current_weather is None:
+        #     current_weather = weather_data["daily"][0]
 
-        tomorrow = weather_data["daily"][0]
+        # tomorrow = weather_data["daily"][0]
 
-        temp_today = current_weather["temp"]["day"]
-        temp_tomorrow = tomorrow["temp"]["day"]
+        # temp_today = current_weather["temp"]["day"]
+        # temp_tomorrow = tomorrow["temp"]["day"]
 
-        if temp_tomorrow > (temp_today + appInfo["temperature_tolerance"]):
-            print("Warmer")
-            trend.temp = "Warmer"
+        # if temp_tomorrow > (temp_today + appInfo["temperature_tolerance"]):
+        #     print("Warmer")
+        #     trend.temp = "Warmer"
 
-        elif temp_tomorrow < (temp_today - appInfo["temperature_tolerance"]):
-            print("Cooler")
+        # elif temp_tomorrow < (temp_today - appInfo["temperature_tolerance"]):
+        #     print("Cooler")
+        #     trend.temp = "Colder"
+        # else:
+        #     print("No Change")
+        #     trend.temp = "No Change"
+
+        # if tomorrow["pop"] >= 0.5:
+        #     print("Rain is expected tomorrow.")
+        #     trend.precipitation = True
+        # else:
+        #     print("No rain expected tomorrow.")
+        #     trend.precipitation = False
+
+        #test cycle
+        trend.precipitation = False
+
+        if trend.temp == "Warmer":
             trend.temp = "Colder"
-        else:
-            print("No Change")
+        elif trend.temp == "Colder":
             trend.temp = "No Change"
-
-        if tomorrow["pop"] >= 0.5:
-            print("Rain is expected tomorrow.")
-            trend.precipitation = True
         else:
-            print("No rain expected tomorrow.")
-            trend.precipitation = False
-        await asyncio.sleep(10) # seconds
+            trend.temp = "Warmer"
+        # current_weather = tomorrow  # Update current weather for the next iteration
+        await asyncio.sleep(10) # seconds TODO: set to appInfo["weather_update_interval"]
 
 async def drive_pixels(trend):
     overall_brightness = 0.0

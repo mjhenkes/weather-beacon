@@ -118,7 +118,7 @@ async def monitor_weather_trend(trend):
         #     trend.precipitation = False
 
         #test cycle
-        trend.precipitation = False
+        # trend.precipitation = False
 
         if trend.temp == "Warmer":
             trend.temp = "Colder"
@@ -126,7 +126,7 @@ async def monitor_weather_trend(trend):
             trend.temp = "No Change"
         else:
             trend.temp = "Warmer"
-            trend.precipitation = !trend.precipitation  # Toggle precipitation for testing
+            trend.precipitation = not trend.precipitation  # Toggle precipitation for testing
 
 
         # current_weather = tomorrow  # Update current weather for the next iteration

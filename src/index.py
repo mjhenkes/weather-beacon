@@ -146,7 +146,7 @@ async def drive_pixels(trend):
     global pattern_offset
     while True:
 
-        if !trend.precipitation:
+        if not trend.precipitation:
             color = trend_to_color(trend, 255)
             pixel.fill(color)
         else:

@@ -121,7 +121,7 @@ async def drive_pixels(trend):
         if trend.temp == "Warmer":
             color = (255, 0, 0, 0)  # Red
         elif trend.temp == "Colder":
-            color = (255, 255, 255, 0)  # White
+            color = (0, 0, 0, 255)  # White
         else:
             color = (0, 255, 0, 0)  # Green
         pixel.fill(color)

@@ -11,8 +11,8 @@ import asyncio
 
 data_pin = board.D18
 order = neopixel.RGBW
-number_of_pixels = 118
-pixel = neopixel.NeoPixel(data_pin, number_of_pixels, brightness=0.5, auto_write=True, pixel_order=order)
+number_of_pixels = 1 #118
+pixel = neopixel.NeoPixel(data_pin, number_of_pixels, brightness=0.5, auto_write=False, pixel_order=order)
 
 appInfo = json.loads(pathlib.Path("./appInfo.json").read_text())
 
@@ -136,6 +136,10 @@ async def drive_pixels(trend):
         else:
             color = (0, 255, 0, 0)  # Green
         pixel.fill(color)
+        pixel.show()
+
+        if trend.temp == "No Change":
+            pixel.deinit()
         # pixel.show()
 
         print("Color:", color)

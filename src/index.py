@@ -15,7 +15,7 @@ number_of_pixels = 119
 pixel = neopixel.NeoPixel(data_pin, number_of_pixels, brightness=0.5, auto_write=False, pixel_order=order)
 
 pattern_offset = 0
-pattern = [255, 126, 0, 126, 255]
+pattern = [255, 126, 1, 126, 255]
 
 appInfo = json.loads(pathlib.Path("./appInfo.json").read_text())
 
@@ -155,12 +155,12 @@ async def drive_pixels(trend):
                 pixel[i] = trend_to_color(trend, pattern[pattern_index])
                 pattern_index = (pattern_index + 1) % len(pattern)
             pattern_offset = (pattern_offset + 1) % len(pattern)
-            pixel.show()
+        pixel.show()
 
         print("Tend:", trend.temp, "Precipitation:", trend.precipitation)
         #     print(json.dumps(weather_data, indent=4))
 
-        await asyncio.sleep(.1)
+        await asyncio.sleep(.05)
     
 async def main():
     trend = Trend()
